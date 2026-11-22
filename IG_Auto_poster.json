@@ -1,0 +1,234 @@
+{
+  "name": "IG_Auto_poster",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Instagram Auto-Poster",
+        "formDescription": "Instagram Auto-Poster",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Topic"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        176,
+        16
+      ],
+      "id": "e68b6e92-ed06-4848-97bc-237464bcd447",
+      "name": "On form submission",
+      "webhookId": "9c3786ef-73b8-4236-9fb5-417ef9e96b88"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Write an engaging, clean, and professional Instagram caption about: {{ $json.Topic }}. Keep it strictly under 40 words. Include exactly 2 emojis and 3 hashtags at the very end."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        16
+      ],
+      "id": "4a4a9ac6-76cd-40fe-9d0b-7ffbb490c2f4",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BRQ6qIkhILVWZx49",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f9bacfd2-0e7b-4b44-96f3-6c980811525b",
+              "name": "image_url",
+              "value": "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=800&auto=format&fit=crop",
+              "type": "string"
+            },
+            {
+              "id": "1070e356-d61b-4e5e-8a68-a227898cfa49",
+              "name": "caption",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        16
+      ],
+      "id": "5d29bf16-2f1c-4354-9128-0ad28e0230d2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v20.0/17841480028873809/media",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "EAAM6Kw3CM6oBRz4dbFoZCJy3YcEZCwTW2Lk13KY3ZCpbZC2XbZBc3xK6hvZBymJL4dKTR3KynxB81DTdX0lgS819pT74vZBRjuTZBME56DcIQiEolQCotxl7RQcymf29h54T77QFcIwTsfiZCVbcC1ja5NXZB7n4wfAJ7GnROIBLVEdL0gGdhBuaaoAP95ZBZB68jxZCzUIS0cXfbLZBiKrwunJZCaQmtZArEiZAMspaJVc2Glh0lD27zTlSZBZAZBKf1WdeYIJZCUswu1ccx5X5mZALZCPGMkZD"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $json.image_url }}"
+            },
+            {
+              "name": "caption",
+              "value": "={{ $json.caption }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        944,
+        16
+      ],
+      "id": "c41fb9ed-e7af-46e9-a990-f1684006ad3e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        16
+      ],
+      "id": "ad279f0a-54c5-48b3-9c5a-e8529685fb22",
+      "name": "Wait",
+      "webhookId": "d75e3d41-7477-4c47-8119-80299d4e0f07"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v20.0/17841480028873809/media_publish",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "access_token",
+              "value": "EAAM6Kw3CM6oBRz4dbFoZCJy3YcEZCwTW2Lk13KY3ZCpbZC2XbZBc3xK6hvZBymJL4dKTR3KynxB81DTdX0lgS819pT74vZBRjuTZBME56DcIQiEolQCotxl7RQcymf29h54T77QFcIwTsfiZCVbcC1ja5NXZB7n4wfAJ7GnROIBLVEdL0gGdhBuaaoAP95ZBZB68jxZCzUIS0cXfbLZBiKrwunJZCaQmtZArEiZAMspaJVc2Glh0lD27zTlSZBZAZBKf1WdeYIJZCUswu1ccx5X5mZALZCPGMkZD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1312,
+        32
+      ],
+      "id": "9942f0c9-16c1-471b-834c-019b954fb93c",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6b2fe832-32d9-4240-9147-3a95f61f5f93",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6aa7ea1e76878045adea24080932d378160d3fbbc8403502aea7a2ca64e99a78"
+  },
+  "nodeGroups": [],
+  "id": "eZWqaB1wvQbAbZfY",
+  "tags": []
+}
